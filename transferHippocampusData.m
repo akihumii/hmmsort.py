@@ -15,7 +15,7 @@ picassoDir = fullfile(filesep,'volume1','Hippocampus','Data','picasso');
 dayStr = cwd(indexDay:indexDay+7);
 dayToChStr = cwd(indexDay : end);
 % dayDir = fullfile(picassoDir, dayStr); % directory of the day
-targetDir = fullfile(picassoDir, dayToChStr);
+targetDir = [fullfile(picassoDir, dayToChStr),filesep];
 % tempDir = fullfile(dayDir, 'transferTemp'); % direcotry of the temporary folder
 % targetDir = fullfile(tempDir, dataName); % directory to save the tar.gz file temporarily in hippocampus
 
@@ -29,9 +29,10 @@ sshHippocampus = 'ssh -p 8398 hippocampus@cortex.nus.edu.sg';
 [flag, count] = resetFlags;
 while flag && count < 100
     try
-        flag = system(['scp -P 8398 . hippocampus@cortex.nus.edu.sg:',targetDir]);
+        system(['ssh -p 8398 hippocampus@cortex.nus.edu.sg mkdir -p ',targetDir]);
+        flag = system(['scp -P 8398 ./* hippocampus@cortex.nus.edu.sg:',targetDir]);
 %         disp(['Secured copied ',fileName,' to home directory of hippocampus ...']);
-        disp(['Secured copied ',fileName,' to target directory...']);
+        disp(['Secured copied files to target directory...']);
 %     catch
 %         disp('Retrying scp tar file to home directory of hippocampus...')
 %         pause(10)
