@@ -5,25 +5,21 @@ function [] = transferHippocampusData()
 %   Detailed explanation goes here
 
 cwd = pwd;
-
-dataName = strrep(cwd,filesep,'_');
-fileName = [dataName,'.tar.gz']; % tar.gz name
+disp(['Processing ',cwd,'...']);
 
 indexDay = strfind(cwd,'2018');
 
 picassoDir = fullfile(filesep,'volume1','Hippocampus','Data','picasso');
-dayStr = cwd(indexDay:indexDay+7);
 dayToChStr = cwd(indexDay : end);
 targetDir = [fullfile(picassoDir, dayToChStr),filesep];
 
-sshHippocampus = 'ssh -p 8398 hippocampus@cortex.nus.edu.sg';
 
 [flag, count] = resetFlags;
 while flag && count < 100
     try
         system(['ssh -p 8398 hippocampus@cortex.nus.edu.sg mkdir -p ',targetDir]);
         flag = system(['scp -P 8398 -r ./* hippocampus@cortex.nus.edu.sg:',targetDir]);
-        disp(['Secured copied files to target directory...']);
+        disp('Secured copied files to target directory...');
         if ~flag
             fid = fopen(fullfile(cwd,'transferred.txt'),'w'); % to mark the channel has been successfully transferred
             fclose(fid);
