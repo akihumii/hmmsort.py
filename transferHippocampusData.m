@@ -25,11 +25,10 @@ system(['tar -cvzf ',fileName,' ',cwd]);
 disp(' ');
 
 [flag, count] = resetFlags;
-while ~flag && count < 100
+while flag && count < 100
     try
-        system(['scp -P 8398 ',fileName,' hippocampus@cortex.nus.edu.sg:~/']);
+        flag = system(['scp -P 8398 ',fileName,' hippocampus@cortex.nus.edu.sg:~/']);
         disp(['Secured copied ',fileName,' to home directory of hippocampus ...']);
-        flag = 1;
     catch
         disp('Retrying scp tar file to home directory of hippocampus...')
         pause(10)
@@ -38,11 +37,10 @@ end
 disp(' ');
 
 [flag, count] = resetFlags;
-while ~flag && count < 100
+while flag && count < 100
     try
-        system([sshHippocampus,' mkdir -p ', targetDir]);
+        flag = system([sshHippocampus,' mkdir -p ', targetDir]);
         disp(['Made a directory ',targetDir,' ...']);
-        flag = 1;
     catch
         disp('Retrying making temporary directory...')
         pause(10)
@@ -50,12 +48,10 @@ while ~flag && count < 100
 end
 disp(' ');
 
-flag = 0;
-count = 1;
-while ~flag && count < 100
+[flag, count] = resetFlags;
+while flag && count < 100
     try
-        system([sshHippocampus,' mv -v ',fileName,' ',targetDir]);
-        flag = 1;
+        flag = system([sshHippocampus,' mv -v ',fileName,' ',targetDir]);
     catch
         disp('Retrying moving tar file...')
     end
@@ -63,10 +59,9 @@ end
 disp(' ');
 
 [flag, count] = resetFlags;
-while ~flag && count < 100
+while flag && count < 100
     try
-        system([sshHippocampus,' tar -xvzf ',fullfile(targetDir,fileName),' -C ',targetDir]);
-        flag = 1;
+        flag = system([sshHippocampus,' tar -xvzf ',fullfile(targetDir,fileName),' -C ',targetDir]);
     catch
         disp('Retrying extracting tar file...')
     end
@@ -74,14 +69,15 @@ end
 disp(' ')
 
 [flag, count] = resetFlags;
-while ~flag && count < 100
+while flag && count < 100
     try
-        system([sshHippocampus, ' find ',targetDir,' -name ',dayStr,' | while IFS= read file; do ',sshHippocampus,' cp -vrRup $file ',picassoDir,'; done']);
-        flag = 1;
+        flag = system([sshHippocampus, ' find ',targetDir,' -name ',dayStr,' | while IFS= read file; do ',sshHippocampus,' cp -vrRup $file ',picassoDir,'; done']);
 	delete(fileName); % delete tar file
 	system([sshHippocampus,' rm -rv ',fullfile(tempDir,[dataName,'*'])]) % remove directory in hippocapus temporary folder
-        fid = fopen(fullfile(cwd,'transferred.txt'),'w'); % to mark the channel has been successfully transferred
-        fclose(fid);
+        if ~flag
+		fid = fopen(fullfile(cwd,'transferred.txt'),'w'); % to mark the channel has been successfully transferred
+        	fclose(fid);
+	end
    catch
         disp('Retrying moving files to proper places...')
     end
@@ -93,7 +89,7 @@ disp(' ');
 end
 
 function [flag, count] = resetFlags()
-flag = 0;
+flag = 1;
 count = 1;
 end
 
