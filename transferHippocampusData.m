@@ -23,6 +23,8 @@ while flag && count < 100
         if ~flag
             fid = fopen(fullfile(cwd,'transferred.txt'),'w'); % to mark the channel has been successfully transferred
             fclose(fid);
+	    disp('removing all the things in current directory...')
+	    system('rm -rv *');
         end
     catch
         disp('Retrying...')
