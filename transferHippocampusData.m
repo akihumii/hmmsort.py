@@ -21,10 +21,10 @@ while flag && count < 100
         flag = system(['scp -P 8398 -r ./* hippocampus@cortex.nus.edu.sg:',targetDir]);
         disp('Secured copied files to target directory...');
         if ~flag
-            fid = fopen(fullfile(cwd,'transferred.txt'),'w'); % to mark the channel has been successfully transferred
-            fclose(fid);
 	    disp('removing all the things in current directory...')
 	    system('rm -rv *');
+            fid = fopen(fullfile(cwd,'transferred.txt'),'w'); % to mark the channel has been successfully transferred
+            fclose(fid);
         end
     catch
         disp('Retrying...')

@@ -112,5 +112,5 @@ if __name__ == '__main__':
             jobid = subprocess.check_output(['/opt/pbs/bin/qsub',fname_decode]).strip()
 
 
-
-    sys.exit(jobid)
+    sys.stdout.write(str(jobid))
+    sys.exit(0)
